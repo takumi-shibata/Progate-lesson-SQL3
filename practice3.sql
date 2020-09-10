@@ -73,3 +73,70 @@ FROM purchases
 WHERE character_name = "にんじゃわんこ"
 ;
 -- ↑金額の最大値を知りたい、誰の?「にんじゃわんこ」の
+
+
+
+-- GROUP BYとは: データをグループ化することができる。「GROUP BY カラム名」とすることで、指定したカラム内で同一のデータを持つレコード同士が同じグループとなる
+-- ※GROUP BYを用いる場合、SELECTで使えるのはGROUP BYに指定している「カラム名」と「集計関数」のみ
+SELECT SUM(price), purchased_at
+FROM purchases
+GROUP BY purchased_at
+;
+-- ↑日付(purchased_at)ごとの金額の合計値(SUM(price))を取得(日付でグループ分け)
+
+SELECT COUNT(price), purchased_at
+FROM purchases
+GROUP BY purchased_at
+;
+-- ↑日付(purchased_at)ごとのお金を使った数(COUNT(price))を取得(日付でグループ分け)
+
+
+
+-- 複数カラムを指定したGROUP BY:「GROUP BY カラム名1,カラム名2」カラム名同士をコンマ(,)で繋げる
+SELECT SUM(price), purchased_at, character_name
+FROM purchases
+GROUP BY purchased_at, character_name
+;
+-- ↑キャラクター(character_name)が日付(purchased_at)ごとに使用した金額の合計値(SUM(price))を取得(日付とキャラクター名でグループ分け)
+
+SELECT COUNT(*), purchased_at, character_name
+FROM purchases
+GROUP BY purchased_at, character_name
+;
+-- ↑キャラクター(character_name)が日付(purchased_at)ごとにお金を使った回数(COUNT(*))を取得(日付とキャラクター名でグループ分け)
+
+
+
+-- ↓WHEREを併用したGROUP BY
+SELECT SUM(price), purchased_at
+FROM purchases
+WHERE character_name = "にんじゃわんこ"
+GROUP BY purchased_at
+;
+-- ↑にんじゃわんこが日付ごとに使用した金額の合計値を取得(WEHREで条件を指定し、日付でグループ分け)
+
+SELECT SUM(price), purchased_at, character_name
+FROM purchases
+WHERE category = "食費"
+GROUP BY purchased_at, character_name
+;
+-- ↑食費に置けるキャラクターが日付ごとにかかった金額の合計値を取得(WEHREで何に使用したか条件を指定し、日付とキャラクター名でグループ分け)
+
+
+
+-- HAVINGとは: GROUP BYでグループ化したデータから、更に特定のグループのみを取得したい時に用いる「GROUP BY カラム名 HAVING 条件」
+-- WHEREは「グループ化される前」のテーブル全体を検索対象とするのに対し、HAVINGは「GROUP BYによってグループ化された」データを検索対象とする
+-- ※HAVINGの条件文で使うカラムは必ずグループ化されたテーブルのカラムを使う!
+SELECT SUM(price), purchased_at
+FROM purchases
+GROUP BY purchased_at
+HAVING SUM(price) > 2000
+;
+-- ↑日付ごとに使用した金額の合計の内、2000を超えるデータのみを取得(日付でグループ分けをし、HAVINGで金額の条件を指定)
+
+SELECT SUM(price), purchased_at, character_name
+FROM purchases
+GROUP BY purchased_at, character_name
+HAVING SUM(price) > 3000
+;
+-- ↑キャラクターが日付ごとに使用した金額の合計の内、3000を超えるデータのみを取得(日付でグループ分けをし、HAVINGで金額の条件を指定)
